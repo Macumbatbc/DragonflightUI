@@ -2,7 +2,7 @@
 For TBC Classic, Tested on Stormforge PTR
 
 - Fix:
-Just fixed an erro when channeling a spell.
+Just fixed an error when channeling a spell.
 
 ![image](https://github.com/user-attachments/assets/637b5288-af2d-474b-8793-6e96ae73637f)
 
