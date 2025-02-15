@@ -1,6 +1,9 @@
 # DragonflightUI
 For TBC Classic, Tested on Stormforge PTR
 
+- Fix:
+Just fixed an erro when channeling a spell.
+
 ![image](https://github.com/user-attachments/assets/637b5288-af2d-474b-8793-6e96ae73637f)
 
 ![image](https://github.com/user-attachments/assets/3ac06e1f-3a13-43c3-860f-5cabf3be255b)
