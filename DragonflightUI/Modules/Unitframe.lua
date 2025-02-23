@@ -487,6 +487,10 @@ function Module:OnEnable()
     else
         Module.Era()
     end
+
+    -- Initialize focus frame elements
+    Module.ChangeFocusFrame()
+
     Module:SaveLocalSettings()
     Module:ApplySettings()
 end
@@ -522,7 +526,7 @@ function Module:SaveLocalSettings()
         obj.y = yOfs
     end
     -- focusframe
-    if DF.Wrath then
+    
         do
             local scale = FocusFrame:GetScale()
             local point, relativeTo, relativePoint, xOfs, yOfs = FocusFrame:GetPoint(1)
@@ -535,7 +539,7 @@ function Module:SaveLocalSettings()
             obj.x = xOfs
             obj.y = yOfs
         end
-    end
+    
 
     --DevTools_Dump({localSettings})
 end
@@ -572,7 +576,7 @@ function Module:ApplySettings()
         Module.ReApplyTargetFrame()
     end
 
-    if DF.Wrath then
+    
         -- focus
         do
             local obj = db.focus
@@ -586,7 +590,7 @@ function Module:ApplySettings()
             FocusFrame:SetScale(obj.scale)
             Module.ReApplyFocusFrame()
         end
-    end
+    
 end
 
 function Module.MovePlayerTargetPreset(name)
@@ -1404,7 +1408,7 @@ function Module.HookDrag()
     TargetFrame:HookScript('OnDragStop', DragStopTargetFrame)
     hooksecurefunc('TargetFrame_ResetUserPlacedPosition', DragStopTargetFrame)
 
-    if DF.Wrath then
+    
         local DragStopFocusFrame = function(self)
             Module.SaveLocalSettings()
 
@@ -1415,7 +1419,7 @@ function Module.HookDrag()
         end
         FocusFrame:HookScript('OnDragStop', DragStopFocusFrame)
     --hooksecurefunc('FocusFrame_ResetUserPlacedPosition', DragStopFocusFrame)
-    end
+   
 end
 
 function Module.HookVertexColor()
@@ -1456,7 +1460,7 @@ function Module.HookVertexColor()
         end
     )
 
-    if DF.Wrath then
+    
         FocusFrameHealthBar:HookScript(
             'OnValueChanged',
             function(self)
@@ -1474,7 +1478,7 @@ function Module.HookVertexColor()
                 end
             end
         )
-    end
+   
 end
 
 function Module.ChangePlayerframe()
@@ -1678,7 +1682,7 @@ function Module.ChangeTargetFrame()
     TargetFrameNameBackground:ClearAllPoints()
     TargetFrameNameBackground:SetPoint('BOTTOMLEFT', TargetFrameHealthBar, 'TOPLEFT', -2, -4 - 1)
 
-    if DF.Wrath then
+    
         local dx = 5
         -- health vs mana bar
         local deltaSize = 132 - 125
@@ -1690,7 +1694,7 @@ function Module.ChangeTargetFrame()
         TargetFrameTextureFrame.ManaBarText:SetPoint('CENTER', TargetFrameManaBar, 'CENTER', -deltaSize / 2, 0)
         TargetFrameTextureFrame.ManaBarTextLeft:SetPoint('LEFT', TargetFrameManaBar, 'LEFT', dx, 0)
         TargetFrameTextureFrame.ManaBarTextRight:SetPoint('RIGHT', TargetFrameManaBar, 'RIGHT', -deltaSize - dx, 0)
-    end
+  
 
     if DF.Wrath then
         TargetFrameFlash:SetTexture('')
@@ -1821,9 +1825,7 @@ function Module.ReApplyTargetFrame()
     end
 
     TargetFrameManaBar:SetStatusBarColor(1, 1, 1, 1)
-    if DF.Wrath then
-        TargetFrameFlash:SetTexture('')
-    end
+    
 
     if frame.PortraitExtra then
         frame.PortraitExtra:UpdateStyle()
@@ -2132,50 +2134,9 @@ function Module.ChangeFocusFrame()
         )
     end
 
-    FocusFrameFlash:SetTexture('')
+    
 
-    if not frame.FocusFrameFlash then
-        local flash = FocusFrame:CreateTexture('DragonflightUIFocusFrameFlash')
-        flash:SetDrawLayer('BACKGROUND', 2)
-        flash:SetTexture(
-            'Interface\\Addons\\DragonflightUI\\Textures\\Unitframe\\UI-HUD-UnitFrame-Target-PortraitOn-InCombat'
-        )
-        flash:SetPoint('CENTER', FocusFrame, 'CENTER', 20 + CorrectionX, -20 + CorrectionY)
-        flash:SetSize(256, 128)
-        flash:SetScale(1)
-        flash:SetVertexColor(1.0, 0.0, 0.0, 1.0)
-        flash:SetBlendMode('ADD')
-        frame.FocusFrameFlash = flash
-    end
-
-    hooksecurefunc(
-        FocusFrameFlash,
-        'Show',
-        function()
-            --print('show')
-            FocusFrameFlash:SetTexture('')
-            frame.FocusFrameFlash:Show()
-            if (UIFrameIsFlashing(frame.FocusFrameFlash)) then
-            else
-                --print('go flash')
-                local dt = 0.5
-                UIFrameFlash(frame.FocusFrameFlash, dt, dt, -1)
-            end
-        end
-    )
-
-    hooksecurefunc(
-        FocusFrameFlash,
-        'Hide',
-        function()
-            --print('hide')
-            FocusFrameFlash:SetTexture('')
-            if (UIFrameIsFlashing(frame.FocusFrameFlash)) then
-                UIFrameFlashStop(frame.FocusFrameFlash)
-            end
-            frame.FocusFrameFlash:Hide()
-        end
-    )
+    
 
     if not frame.FocusExtra then
         local extra = FocusFrame:CreateTexture('DragonflightUIFocusFramePortraitExtra')
@@ -2269,7 +2230,7 @@ function Module.ReApplyFocusFrame()
 
     FocusFrameManaBar:SetStatusBarColor(1, 1, 1, 1)
 
-    FocusFrameFlash:SetTexture('')
+    
 
     if frame.FocusExtra then
         frame.FocusExtra:UpdateStyle()
@@ -2317,7 +2278,11 @@ function Module.ChangeFocusToT()
 end
 
 function Module.UpdateFocusText()
-    --print('UpdateFocusText')
+    -- Ensure FocusFrameHealthBarText exists before accessing it
+    if not frame.FocusFrameHealthBarText or not frame.FocusFrameManaBarText then
+        return
+    end
+
     if UnitExists('focus') then
         local max_health = UnitHealthMax('focus')
         local health = UnitHealth('focus')
@@ -2475,10 +2440,10 @@ function frame:OnEvent(event, arg1)
         Module.ReApplyTargetFrame()
         Module.ReApplyToT()
         Module.MoveAttackIcon()
-        if DF.Wrath then
+        
             Module.ChangeFocusFrame()
             Module.ChangeFocusToT()
-        end
+       
         Module.ChangePetFrame()
 
         Module.ApplySettings()
